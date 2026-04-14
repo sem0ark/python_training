@@ -1,0 +1,9 @@
+[project]
+name = "26-python-mentoring"
+version = "0.1.0"
+description = "26-python-mentoring"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest",
+    "ruff",
+]
