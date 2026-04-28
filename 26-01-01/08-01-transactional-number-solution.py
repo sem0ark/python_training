@@ -1,12 +1,12 @@
 """
-Build a transactional calculation system where numbers track their 
+Build a transactional calculation system where numbers track their
 history, and operations can be rolled back if an error occurs.
 
 Requirements:
 1. Define a custom exception `AuditError`.
 2. Number Class:
     - Implement initialization to store a numeric `value` and a string `history`.
-    - If no history is provided during initialization, use the string 
+    - If no history is provided during initialization, use the string
       representation of the value.
     - Implement common operations + - *
         - Support operations with other `Number` instances or raw numeric types.
@@ -15,7 +15,7 @@ Requirements:
     - Implement division /
         - Support operations with other `Number` instances or raw numeric types.
         - Update the history to reflect the operation in the format: (left / right).
-        - If the operation results in a division by zero, raise an `AuditError` 
+        - If the operation results in a division by zero, raise an `AuditError`
           with the message "Calculation failed".
         - Ensure the original error is attached to the `AuditError`.
 3. Transactional Context Manager:
@@ -24,7 +24,7 @@ Requirements:
     - Upon entering the block, it should capture the current state of the number.
     - Upon exiting the block:
         - If the block finished successfully, the changes to the number are kept.
-        - If any exception occurred, the number must be restored to its exact 
+        - If any exception occurred, the number must be restored to its exact
           state from before the block started.
         - The context manager must not silence any exceptions.
 
@@ -81,7 +81,7 @@ class Number:
         except ZeroDivisionError as e:
             # Raise AuditError chained from the original ZeroDivisionError
             raise AuditError("Calculation failed") from e
-        
+
         new_history = f"({self.history} / {other_hist})"
         return Number(new_value, new_history)
 
@@ -104,7 +104,7 @@ class Transactional:
             # If an exception occurred, restore the target to its original state
             self.target.__dict__.clear()
             self.target.__dict__.update(self._snapshot)
-        
+
         # Return False to ensure exceptions are propagated (not silenced)
         return False
 
