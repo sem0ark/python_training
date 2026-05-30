@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "26-python-mentoring"
 requires-python = ">=3.10"
 dependencies = [
+    "coverage>=7.14.1",
+    "mypy>=2.1.0",
     "pytest",
+    "requests>=2.34.2",
     "ruff",
 ]
