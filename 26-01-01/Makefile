@@ -1,20 +1,30 @@
+CLI := uv run python ../cli.py
+
+.PHONY: ruff test pack unpack run watch solution quality_gate
+
 ruff:
-	uv run ruff check --select I --fix
+	uv run ruff check --select I --fix .
 	uv run ruff format .
 
-run_all_solution_files:
-	for file in *-solution.py; do \
-		if [[ $$file == *"coverage"* ]]; then \
-			uv run internal_coverage_runner.py $$file; \
-		elif [[ $$file == *"type"* ]]; then \
-			uv run internal_type_checker.py $$file; \
-		else \
-			uv run $$file; \
-		fi \
-	done
+test:
+	uv run pytest .
 
-quality_gate:
-	set +e; \
-	$(MAKE) ruff; \
-	$(MAKE) run_all_solution_files; \
-	set -e
+pack:
+	$(CLI) pack
+
+unpack:
+	$(CLI) unpack
+
+run:
+	@test -n "$(PREFIX)" || (echo "Usage: make run PREFIX=03-01"; exit 1)
+	$(CLI) run $(PREFIX)
+
+watch:
+	@test -n "$(PREFIX)" || (echo "Usage: make watch PREFIX=03-01"; exit 1)
+	$(CLI) watch $(PREFIX)
+
+solution:
+	@test -n "$(PREFIX)" || (echo "Usage: make solution PREFIX=03-01"; exit 1)
+	$(CLI) solution $(PREFIX)
+
+quality_gate: ruff test
