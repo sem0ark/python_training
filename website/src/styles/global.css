@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  color-scheme: light;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  background: #f8fafc;
+  color: #1f2937;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button,
+textarea {
+  font: inherit;
+}

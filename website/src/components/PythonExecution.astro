@@ -1,0 +1,151 @@
+---
+interface Props {
+  code: string;
+  task?: string;
+  description?: string;
+  cases?: { input: string; expected: string }[];
+}
+
+const {
+  code,
+  task = "Python task",
+  description = "Run the displayed code in an isolated Pyodide worker.",
+  cases = [],
+} = Astro.props;
+const config = JSON.stringify({ code, cases });
+---
+
+<section
+  class="not-prose overflow-hidden rounded-lg border-2 border-neutral-300 bg-white"
+  data-python-execution
+  data-config={config}
+>
+  <div class="border-b-2 border-neutral-200 px-4 py-4">
+    <p class="text-sm font-bold text-blue-500">Python task</p>
+    <h2 class="mt-1 text-xl font-bold text-neutral-800">{task}</h2>
+    <p class="mt-2 text-sm text-neutral-600">{description}</p>
+  </div>
+  <pre
+    class="max-h-96 min-h-64 overflow-auto border-b-2 border-neutral-200 bg-neutral-100 p-4 font-mono text-sm leading-6 text-neutral-800"><code data-code>{code}</code></pre>
+  <div class="flex flex-wrap items-center gap-2 px-4 py-3">
+    <button
+      data-copy-original
+      class="rounded-md border-2 border-neutral-200 bg-neutral-100 px-3 py-1 text-sm font-bold text-blue-500 hover:border-blue-500"
+      >Copy original</button
+    >
+    <button
+      data-copy-code
+      class="rounded-md border-2 border-neutral-200 bg-neutral-100 px-3 py-1 text-sm font-bold text-blue-500 hover:border-blue-500"
+      >Copy code</button
+    >
+    <button
+      data-paste-code
+      class="rounded-md border-2 border-neutral-500 px-3 py-1 text-sm font-bold text-blue-500 hover:border-blue-500"
+      >Paste from clipboard</button
+    >
+    <button
+      data-run
+      class="ml-auto rounded-md border-2 border-neutral-500 px-3 py-1 text-sm font-bold text-blue-500 hover:border-blue-500"
+      >Run tests</button
+    >
+    <span data-status class="w-full text-xs text-neutral-500">Ready</span>
+  </div>
+  <div
+    data-results
+    class="space-y-2 border-t-2 border-neutral-200 p-4 text-sm text-neutral-600"
+  >
+    <p>Results appear here after execution.</p>
+  </div>
+</section>
+
+<script>
+  import { PythonRunner } from "../pythonRunner";
+  import { runTestCases } from "../judge";
+
+  const runner = new PythonRunner();
+  const escapeHtml = (value: string) =>
+    value.replace(
+      /[&<>'"]/g,
+      (character) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "'": "&#39;",
+          '"': "&quot;",
+        })[character] ?? character,
+    );
+
+  document
+    .querySelectorAll<HTMLElement>("[data-python-execution]")
+    .forEach((panel) => {
+      const config = JSON.parse(
+        panel.dataset.config ?? '{"code":"","cases":[]}',
+      ) as { code: string; cases: { input: string; expected: string }[] };
+      const codePreview = panel.querySelector("[data-code]");
+      const status = panel.querySelector("[data-status]");
+      const results = panel.querySelector("[data-results]");
+      let currentCode = config.code;
+
+      const setStatus = (message: string) => {
+        if (status) status.textContent = message;
+      };
+      const copy = async (value: string, message: string) => {
+        try {
+          await navigator.clipboard.writeText(value);
+          setStatus(message);
+        } catch {
+          setStatus("Clipboard access is unavailable");
+        }
+      };
+
+      panel
+        .querySelector("[data-copy-original]")
+        ?.addEventListener("click", () =>
+          copy(config.code, "Original code copied"),
+        );
+      panel
+        .querySelector("[data-copy-code]")
+        ?.addEventListener("click", () => copy(currentCode, "Code copied"));
+      panel
+        .querySelector("[data-paste-code]")
+        ?.addEventListener("click", async () => {
+          try {
+            const pasted = await navigator.clipboard.readText();
+            if (!pasted.trim()) {
+              setStatus("Clipboard is empty");
+              return;
+            }
+            currentCode = pasted;
+            if (codePreview) codePreview.textContent = pasted;
+            setStatus("Full code pasted");
+          } catch {
+            setStatus("Clipboard access is unavailable");
+          }
+        });
+      panel
+        .querySelector("[data-run]")
+        ?.addEventListener("click", async (event) => {
+          const button = event.currentTarget;
+          if (!(button instanceof HTMLButtonElement)) return;
+          button.disabled = true;
+          setStatus("Running in isolated worker...");
+          const output = await runTestCases(
+            runner,
+            currentCode,
+            config.cases.length ? config.cases : [{ input: "", expected: "" }],
+          );
+          if (results)
+            results.innerHTML = output
+              .map(
+                (test, index) =>
+                  `<div class="flex items-center justify-between rounded-lg bg-neutral-100 px-4 py-3"><span><b class="${test.passed ? "text-green-600" : "text-red-600"}">${test.passed ? "PASS" : "FAIL"}</b> <span class="ml-2 text-neutral-600">Case ${index + 1}</span></span><span class="font-mono text-xs text-neutral-500">${escapeHtml(test.error ?? `${test.actual} · expected ${test.expected} · ${test.executionTimeMs}ms`)}</span></div>`,
+              )
+              .join("");
+          setStatus(
+            `${output.filter((test) => test.passed).length}/${output.length} passed`,
+          );
+          button.disabled = false;
+        });
+    });
+</script>

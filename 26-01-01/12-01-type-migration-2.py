@@ -89,20 +89,16 @@ def transform_data(factor: int, label: str) -> str:
 # --- DO NOT MODIFY THE TESTS BELOW ---
 
 
-def test_generic_extractor():
+def test_generic_extractor() -> None:
     metrics = [MetricPayload(1.1), MetricPayload(2.2)]
     logs = [LogPayload("start"), LogPayload("end")]
-
-    from __main__ import extract_first
 
     assert extract_first(metrics).value == 1.1
     assert extract_first(logs).message == "start"
     assert hasattr(extract_first, "__type_params__"), "Must use PEP 695 [T] syntax"
 
 
-def test_generic_envelope_typing():
-    from __main__ import DataEnvelope
-
+def test_generic_envelope_typing() -> None:
     env = DataEnvelope(MetricPayload(42.0), 1600000000.0)
     assert env.content.value == 42.0
     assert hasattr(DataEnvelope, "__type_params__"), (
@@ -110,7 +106,7 @@ def test_generic_envelope_typing():
     )
 
 
-def test_bounded_generic_payload():
+def test_bounded_generic_payload() -> None:
     metric = MetricPayload(5.5)
     result = validate_and_return(metric)
     assert isinstance(result, MetricPayload)
@@ -122,7 +118,7 @@ def test_bounded_generic_payload():
     )
 
 
-def test_self_referential_modernization():
+def test_self_referential_modernization() -> None:
     node_a = ProcessingNode("A")
     node_b = ProcessingNode("B")
     linked = node_a.link_to(node_b)
@@ -134,7 +130,7 @@ def test_self_referential_modernization():
     assert hints.get("return") is Self, "clone() should return 'Self'"
 
 
-def test_decorator_metadata_preservation():
+def test_decorator_metadata_preservation() -> None:
     assert transform_data.__name__ == "transform_data"
     assert transform_data.__doc__ == "Multiplies label by factor."
 
@@ -144,7 +140,7 @@ def test_decorator_metadata_preservation():
     assert sig.return_annotation is str
 
 
-def test_decorator_paramspec_implementation():
+def test_decorator_paramspec_implementation() -> None:
     assert hasattr(transform_data, "__wrapped__"), "Decorator must use @wraps"
 
 

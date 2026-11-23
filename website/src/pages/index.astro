@@ -1,0 +1,66 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PythonExecution from "../components/PythonExecution.astro";
+const starterCode =
+  "nums = list(map(int, input().split()))\ntarget = int(input())\nseen = {}\nfor index, value in enumerate(nums):\n    complement = target - value\n    if complement in seen:\n        print(seen[complement], index)\n        break\n    seen[value] = index";
+const testCases = [
+  { input: "2 7 11 15\n9", expected: "0 1" },
+  { input: "3 2 4\n6", expected: "1 2" },
+];
+---
+
+<Layout>
+  <main class="min-h-dvh">
+    <header class="border-b-2 border-b-neutral-300 bg-white px-6 py-4">
+      <div
+        class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4"
+      >
+        <div>
+          <p class="text-xs font-bold text-blue-500">Python training / 01</p><h1
+            class="mt-1 text-2xl font-bold text-neutral-800"
+          >
+            Two Sum
+          </h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <a
+            href={`${import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`}overview`}
+            class="text-sm font-bold text-blue-500 hover:text-blue-600"
+            >Algorithm overview →</a
+          ><span
+            class="rounded-lg border-2 border-neutral-200 bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-600"
+            >Easy</span
+          >
+        </div>
+      </div>
+    </header>
+    <section
+      class="mx-auto grid max-w-6xl gap-6 p-6 lg:grid-cols-[0.8fr_1.2fr]"
+    >
+      <article class="rounded-lg border-2 border-neutral-300 bg-white p-4">
+        <p class="mb-4 text-sm leading-6 text-neutral-600">
+          Given a list of integers, print the indices of two values that add up
+          to the target. The input contains the numbers on the first line and
+          the target on the second line.
+        </p>
+        <h2 class="mb-3 text-xs font-bold text-neutral-500">Example</h2>
+        <pre
+          class="rounded-lg border-2 border-neutral-200 bg-neutral-100 p-4 font-mono text-sm leading-6 text-neutral-800">2 7 11 15
+9</pre>
+        <p class="mt-4 text-sm text-neutral-600">
+          Expected output: <code class="text-neutral-800">0 1</code>
+        </p>
+        <p class="mt-6 text-sm text-neutral-600">
+          Target complexity: <strong class="text-blue-500">O(n)</strong> time and
+          <strong class="text-blue-500">O(n)</strong> space with a hashmap.
+        </p>
+      </article>
+      <PythonExecution
+        task="Write a solution"
+        description="Read stdin, solve the task, and compare your output against hidden cases."
+        code={starterCode}
+        cases={testCases}
+      />
+    </section>
+  </main>
+</Layout>
