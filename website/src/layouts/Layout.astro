@@ -1,0 +1,16 @@
+---
+import "../styles/global.css";
+import "katex/dist/katex.min.css";
+const { title = "PyJudge" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head
+    ><meta charset="UTF-8" /><meta
+      name="viewport"
+      content="width=device-width"
+    /><title>{title}</title></head
+  >
+  <body class="min-h-dvh bg-neutral-50 text-neutral-800"><slot /></body>
+</html>

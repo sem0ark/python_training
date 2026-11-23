@@ -1,0 +1,94 @@
+---
+layout: ../layouts/LectureLayout.astro
+title: Algorithm Overview
+---
+
+import PythonExecution from "../components/PythonExecution.astro";
+
+# 02: Overview of algorithms
+
+**In-depth reading**: [Competitive Programming Cookbook by Antti Laaksonen](https://cses.fi/book/book.pdf) and the [CSES Problem Set](https://cses.fi/problemset/).
+
+## Theory
+
+### Complexity definition
+
+**Big O** ($O$) shows the dominant term and an upper bound of an algorithm's growth:
+
+$$O(g(n)) = f(n) \implies (\exists c,n_0 \in \mathbb{R})(\forall n > n_0)(cg(n) \geq f(n))$$
+
+Useful rules:
+
+1. $O(cf(n)) = O(f(n))$
+2. $O(f(n)) < O(h(n)) \implies O(f(n) + h(n)) = O(h(n))$
+3. $O(f(n)h(n)) = O(f(n)) * O(h(n))$
+
+**Big Omega** ($\Omega$) is a lower bound:
+
+$$\Omega(g(n)) = f(n) \implies (\exists c,n_0 \in \mathbb{R})(\forall n > n_0)(cg(n) \leq f(n))$$
+
+**Big Theta** ($\Theta$) is a tight bound:
+
+$$\Theta(g(n)) = f(n) \implies (\exists c_1,c_2,n_0 \in \mathbb{R})(\forall n > n_0)(c_1g(n) \leq f(n) \leq c_2g(n))$$
+
+### Complexity classes
+
+| Time         | Description                       | Example                |
+| ------------ | --------------------------------- | ---------------------- |
+| $O(1)$       | Independent of input size         | Direct formula         |
+| $O(\log n)$  | Halves the search space           | Binary search          |
+| $O(\sqrt n)$ | Checks up to a square root        | Prime check            |
+| $O(n)$       | Visits each item                  | Array minimum          |
+| $O(n\log n)$ | Sorts or repeats logarithmic work | Merge sort             |
+| $O(n^2)$     | Two nested loops                  | Bubble sort            |
+| $O(n^3)$     | Three nested loops                | Floyd's algorithm      |
+| $O(2^n)$     | Enumerates subsets                | Recursive Fibonacci    |
+| $O(n!)$      | Enumerates permutations           | Permutation generation |
+
+Polynomial algorithms run in $O(n^k)$ for constant $k$. In practice, smaller $k$ and smaller constant factors matter.
+
+### Estimating efficiency
+
+| Input size    | Usually acceptable     |
+| ------------- | ---------------------- |
+| $n \leq 10$   | $O(n!)$                |
+| $n \leq 20$   | $O(2^n)$               |
+| $n \leq 500$  | $O(n^3)$               |
+| $n \leq 5000$ | $O(n^2)$               |
+| $n \leq 10^6$ | $O(n\log n)$ or $O(n)$ |
+| Huge          | $O(1)$ or $O(\log n)$  |
+
+## Common data structures
+
+### Array/list
+
+Python's `list` is a dynamic array. Random access is fast, while inserting or deleting in the middle shifts later elements.
+
+| Operation                   | Average time     |
+| --------------------------- | ---------------- |
+| `list[index]`               | $O(1)$           |
+| `append` / `pop` at end     | $O(1)$ amortized |
+| `insert` / arbitrary delete | $O(n)$           |
+
+### Set and hashmap
+
+`set` and `dict` use hash tables. Add, remove, membership, and average-case lookup are $O(1)$, with $O(n)$ worst-case degradation under severe collisions.
+
+### Graphs and trees
+
+An adjacency matrix uses $O(V^2)$ space and suits dense graphs. An adjacency list uses $O(V+E)$ space and suits sparse graphs. Trees represent hierarchy; balanced search trees typically offer $O(\log n)$ search, insert, and delete.
+
+### Heap and disjoint set
+
+Use a min/max heap for repeated minimum/maximum selection. Use a disjoint-set union structure for many connectivity joins. Specialized indexes such as R-trees and quad-trees are preferable for geospatial ranges.
+
+## Practice
+
+The execution block below is the template for future lessons: describe the task, provide starter code, optionally define test cases, and show structured results.
+
+<PythonExecution
+  task="Linear scan"
+  description="Copy the example, paste a complete solution when needed, and run the lesson test case."
+  code={"numbers = [4, 1, 9, 2]\nprint(max(numbers))"}
+  cases={[{ input: "", expected: "9" }]}
+/>
